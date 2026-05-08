@@ -64,9 +64,23 @@ You will need API keys for:
    TAVILY_API_KEY=your_tavily_api_key_here
    ```
 
+### 🐳 Running with Docker
+
+You can easily run this application using the pre-built Docker image from Docker Hub without needing to set up Python locally.
+
+1. **Run the container:**
+   ```bash
+   docker run -p 8501:8501 \
+     -e OPENAI_API_KEY=your_openai_api_key_here \
+     -e TAVILY_API_KEY=your_tavily_api_key_here \
+     nadim30/blog_post_generator_langraph:latest
+   ```
+
+2. Open your browser to `http://localhost:8501`.
+
 ## 💻 Usage
 
-Start the Streamlit application:
+Start the Streamlit application locally:
 
 ```bash
 streamlit run app.py
