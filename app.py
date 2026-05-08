@@ -14,7 +14,11 @@ from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_community.tools.tavily_search import TavilySearchResults
 from dotenv import load_dotenv
-import streamlit as st
+
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import uvicorn
 
 # Fix SSL issue by removing invalid SSL_CERT_DIR and SSL_CERT_FILE if set
 os.environ.pop("SSL_CERT_DIR", None)
@@ -412,13 +416,40 @@ def run(topic: str):
     return out
 
 # -----------------------------
-# Streamlit UI
+# 11) FastAPI App
 # -----------------------------
-st.title("Blog Writing Agent")
+app = FastAPI(title="Blog Writer Agent API")
 
-topic = st.text_input("Enter the blog topic:", value="State of Multimodal LLMs in 2026")
+# Mount static files directory
+STATIC_DIR = Path(__file__).parent / "static"
+STATIC_DIR.mkdir(exist_ok=True)
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
-if st.button("Generate Blog"):
-    with st.spinner("Generating blog post..."):
-        result = run(topic)
-        st.markdown(result["final"])
+
+class TopicRequest(BaseModel):
+    topic: str
+
+
+class BlogResponse(BaseModel):
+    markdown: str
+    title: str
+
+
+@app.get("/")
+async def serve_index():
+    """Serve the main HTML page."""
+    return FileResponse(str(STATIC_DIR / "index.html"))
+
+
+@app.post("/api/generate", response_model=BlogResponse)
+async def generate_blog(request: TopicRequest):
+    """Generate a blog post for the given topic."""
+    result = run(request.topic)
+    title = ""
+    if result.get("plan"):
+        title = result["plan"].blog_title
+    return BlogResponse(markdown=result["final"], title=title)
+
+
+if __name__ == "__main__":
+    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)

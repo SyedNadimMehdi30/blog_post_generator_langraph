@@ -1,6 +1,6 @@
 # ✍️ Blog Writer Agent using LangGraph
 
-An intelligent, multi-agent AI application that automatically researches, plans, and writes high-quality technical blog posts. Built with **LangGraph**, **LangChain**, and **Streamlit**, this tool simulates a team of specialized AI agents working together to produce comprehensive and grounded markdown articles.
+An intelligent, multi-agent AI application that automatically researches, plans, and writes high-quality technical blog posts. Built with **LangGraph**, **LangChain**, and **FastAPI**, this tool simulates a team of specialized AI agents working together to produce comprehensive and grounded markdown articles.
 
 ---
 
@@ -10,7 +10,7 @@ An intelligent, multi-agent AI application that automatically researches, plans,
 - **Dynamic Web Research**: Automatically determines if web research is needed using [Tavily Search](https://tavily.com/) to fetch up-to-date information and cite sources.
 - **Parallel Processing**: Uses LangGraph's fan-out capabilities to write multiple blog sections concurrently, drastically reducing generation time.
 - **Intelligent Planning**: Creates highly actionable, developer-focused outlines with specific goals, target word counts, and required code snippets.
-- **Streamlit UI**: A clean, intuitive web interface to input topics and view the generated blog posts in real-time.
+- **Premium Web UI**: A sleek, dark-themed HTML/CSS/JS interface with live pipeline visualization, markdown rendering, and one-click copy/download.
 
 ## 🏗️ System Architecture
 
@@ -27,7 +27,8 @@ The agent workflow follows a directed state graph:
 - **Framework:** [LangGraph](https://python.langchain.com/docs/langgraph/) & [LangChain](https://python.langchain.com/)
 - **LLM:** OpenAI (`gpt-4.1-mini`)
 - **Search API:** Tavily
-- **Frontend:** Streamlit
+- **Backend:** FastAPI + Uvicorn
+- **Frontend:** HTML / CSS / JavaScript
 - **Data Validation:** Pydantic
 
 ## 🚀 Getting Started
@@ -70,30 +71,36 @@ You can easily run this application using the pre-built Docker image from Docker
 
 1. **Run the container:**
    ```bash
-   docker run -p 8501:8501 \
+   docker run -p 8000:8000 \
      -e OPENAI_API_KEY=your_openai_api_key_here \
      -e TAVILY_API_KEY=your_tavily_api_key_here \
      nadim30/blog_post_generator_langraph:latest
    ```
 
-2. Open your browser to `http://localhost:8501`.
+2. Open your browser to `http://localhost:8000`.
 
 ## 💻 Usage
 
-Start the Streamlit application locally:
+Start the application locally:
 
 ```bash
-streamlit run app.py
+python app.py
 ```
 
-1. Open your browser to the URL provided in the terminal (usually `http://localhost:8501`).
+1. Open your browser to `http://localhost:8000`.
 2. Enter your desired blog topic (e.g., *"State of Multimodal LLMs in 2026"*).
 3. Click **Generate Blog**.
-4. The system will plan, research, and write the blog post, displaying the final Markdown in the UI and saving it as a `.md` file in your working directory.
+4. Watch the live pipeline animation as the agents research, plan, and write.
+5. Copy the markdown or download it as a `.md` file using the action buttons.
 
 ## 📂 Repository Structure
 
-- `app.py`: Main LangGraph agent definition and Streamlit UI code.
+- `app.py`: FastAPI backend with LangGraph agent definition and API endpoints.
+- `static/index.html`: Main frontend HTML page.
+- `static/style.css`: Premium dark-mode CSS design system.
+- `static/script.js`: Frontend JavaScript (API calls, pipeline animation, markdown rendering).
+- `Dockerfile`: Container build configuration.
+- `.github/workflows/docker-publish.yml`: CI/CD pipeline for Docker Hub.
 - `requirements.txt`: Required Python dependencies.
 - `1.Blog_agent_easy.ipynb`: Introductory notebook for a simple blog agent.
 - `2.Blog_agent_prompted.ipynb`: Advanced prompt engineering demonstration.
